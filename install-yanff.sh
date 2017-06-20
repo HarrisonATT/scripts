@@ -26,7 +26,7 @@ ver=$(go version | sed -nr 's/.*go([0-9]\.[0-9]).*/\1/p')
 # ver=$(go version | awk '{ print $3 }')
 # ver=${ver/go/}
 # ver=${ver%.*}
-awk -v ver=${ver} -v reqver=${reqver} 'BEGIN { if (ver < reqver) exit 1 }' || {
+awk -v ver="${ver}" -v reqver="${reqver}" 'BEGIN { if (ver < reqver) exit 1 }' || {
     echo "go must be at least version $reqver"
     exit 1
 }
@@ -53,7 +53,7 @@ GOPATH=$(go env GOPATH)
 go get -v -d github.com/docker/docker/api
 # Go to $GOPATH/src/github.com/docker/docker/vendor/github.com/docker and delete
 # directory named "go-connections."
-rm -rf ${GOPATH}/src/github.com/docker/docker/vendor/github.com/docker/go-connections
+rm -rf "${GOPATH}/src/github.com/docker/docker/vendor/github.com/docker/go-connections"
 # Install go-connections dependencies:
 go get -v github.com/Sirupsen/logrus
 go get -v github.com/pkg/errors
@@ -67,7 +67,7 @@ go install github.com/docker/docker/api
 go get -v golang.org/x/tools/cmd/stringer
 # Set your PATH to point to bin directory under your GOPATH, e.g. export
 # PATH="$PATH:$GOPATH"/bin
-echo $PATH | tr ':' '\n' | grep "${GOPATH}/bin" || \
+echo "$PATH" | tr ':' '\n' | grep "${GOPATH}/bin" || \
     echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc
 # You should be able to build test framework now with "make main" in test
 # sub-directory.

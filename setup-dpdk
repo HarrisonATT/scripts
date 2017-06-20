@@ -21,7 +21,7 @@ getver () {
 
 # Return zero if tool has a version number greater than argument, else non-zero.
 checkver () {
-    verlt "$2" $(getver "$1") || (echo "	$1 is not at least version $2"; return 1)
+    verlt "$2" "$(getver "$1")" || (echo "	$1 is not at least version $2"; return 1)
 }
 
 # http://stackoverflow.com/a/4024263
@@ -29,7 +29,7 @@ verlte() {
     [  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
 }
 verlt() {
-    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+    [ "$1" = "$2" ] && return 1 || verlte "$1" "$2"
 }
 
 # get a yes or no response
@@ -57,7 +57,7 @@ yn_defaultn () {
 ################################################################################
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
 required_tools=(make cmp sed grep arch gcc python2 python3)
-for tool in ${required_tools[@]}; do
+for tool in "${required_tools[@]}"; do
     check $tool || (echo "Do not have all required tools."
                     echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk"
                     echo "for more details"; exit 1)
@@ -80,7 +80,7 @@ echo "Tools are up-to-date."
 ################################################################################
 # Check kernel version
 kernel_version=2.7
-if verlt $(stripver $(uname -r)) $kernel_version; then
+if verlt "$(stripver "$(uname -r)")" $kernel_version; then
     echo "Kernel version not at least 2.7."; exit 1
 else
     echo "Kernel is up-to-date."
@@ -114,8 +114,8 @@ grep -q 'GRUB_CMDLINE_LINUX=.*huge' /etc/default/grub ||
          /etc/default/grub || (echo "Cannot set up huge pages in /proc/cpuinfo";
                                exit 1)
 sudo mount -t hugetlbfs nodev "$huge_page_dir"
-grep -q 'huge' /etc/fstab ||
-    echo 'nodev ${huge_page_dir} hugetlbfs ${huge_page_fstab} 0 0' | \
+grep -q "huge" /etc/fstab ||
+    echo "nodev ${huge_page_dir} hugetlbfs ${huge_page_fstab} 0 0" | \
         sudo tee -a /etc/fstab &>/dev/null
 echo "Huge pages setup"
 
@@ -146,15 +146,15 @@ source set-environment-variables
 # This order was created from the suggestion here:
 # http://dpdk.org/ml/archives/dev/2016-March/036207.html
 # This creates a configuration script
-make config T=$RTE_TARGET
+make config T="$RTE_TARGET"
 if yn_defaultn "Do you want to change the config file?"; then
     echo "Edit ${HOME}/dpdk-${dpdk_version}/build/.config"
-    echo "Return to line $((LINENO + 2)) in $(basename $0) to finish installing."
+    echo "Return to line $((LINENO + 2)) in $(basename "$0") to finish installing."
 fi
 # This compiles something...I'm not sure what
 make
 # This compiles and installs the dpdk libraries in $dpdk_directory/dpdk-install
-make install T=$RTE_TARGET DESTDIR=dpdk-install
+make install T="$RTE_TARGET" DESTDIR="dpdk-install"
 
 # These commands need to be run before any DPDK application is run
 echo "#!/bin/bash

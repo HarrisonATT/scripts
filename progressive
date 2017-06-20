@@ -3,9 +3,9 @@
 ##############################################
 ## Preparation: Ensure superuser privileges ##
 ##############################################
-if [ $USER != "root" ]; then
+if [ "$USER" != "root" ]; then
     echo "Restarting script with sudo.."
-    sudo $0 ${*}
+    sudo "$0" "$@"
     exit
 fi
 
@@ -25,7 +25,7 @@ ${stars}
 #######################################
 ## Preparation: Clear existing state ##
 #######################################
-ps -ef | grep vpp | grep -v grep | awk '{print $2}'| xargs -r sudo kill
+pgrep -ef vpp | grep -v grep | awk '{print $2}'| xargs -r sudo kill
 sudo ip link del dev vpp1host
 sudo ip link del dev vpp1vpp2
 
@@ -42,7 +42,7 @@ set -x # echo commands before they run
 ## Exercise: vpp basics ##
 ##########################
 # Action: Run vpp
-vpp api-segment { prefix vpp1 }
+vpp api-segment '{' prefix vpp1 '}'
 # Action: Using vppctl to send commands to vpp
 vppctl -p vpp1 show ver
 read
@@ -90,7 +90,7 @@ echo "${footer}"
 ## Exercise: Create an Interface ##
 ###################################
 # Action: Running a second vpp instances
-vpp api-segment { prefix vpp2 }
+vpp api-segment '{' prefix vpp2 '}'
 # Action: Create veth interface on host to connect the two vpp instances
 ip link add name vpp1vpp2 type veth peer name vpp2vpp1
 ip link set dev vpp1vpp2 up
