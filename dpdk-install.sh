@@ -6,7 +6,7 @@
 # Return zero if tool exists, else non-zero.
 check () {
     # Non-zero error code if command does not exist.
-    $1 --version &>/dev/null || (echo "	Missing required tool: $1"; return 1)
+    "$1" --version &>/dev/null || (echo "	Missing required tool: $1"; return 1)
 }
 
 # Return the version number out of a version string
@@ -80,7 +80,7 @@ echo "Tools are up-to-date."
 ################################################################################
 # Check kernel version
 kernel_version=2.7
-if verlt "$(stripver "$(uname -r)")" $kernel_version; then
+if verlt "$(stripver "$(uname -r)")" "$kernel_version"; then
     echo "Kernel version not at least 2.7."; exit 1
 else
     echo "Kernel is up-to-date."
