@@ -74,6 +74,11 @@ for tool_n_version in "${versioned_tools[@]}"; do
 done
 echo "Tools are up-to-date."
 
+# Install required packages
+sudo apt-get install libpcap-dev gcc-multilib xz-utils || {
+    echo "Need to have libpcap headers and gcc-multilib"
+}
+
 
 ################################################################################
 #                                    Kernel                                    #

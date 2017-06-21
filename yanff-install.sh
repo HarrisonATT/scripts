@@ -37,7 +37,7 @@ awk -v ver="${ver}" -v reqver="${reqver}" 'BEGIN { if (ver < reqver) exit 1 }' |
 # gcc-multilib : for DPDK
 # xz-utils     : to decompress DPDK download
 sudo apt-get install git libpcap-dev gcc-multilib xz-utils || {
-    echo "Need to have libpcap headers and gcc-multilib"
+    echo "Need to have git, libpcap headers, gcc-multilib, and xz-utils"
 }
 
 
