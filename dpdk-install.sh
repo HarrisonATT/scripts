@@ -58,9 +58,11 @@ yn_defaultn () {
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
 required_tools=(make cmp sed grep arch gcc python2 python3)
 for tool in "${required_tools[@]}"; do
-    check $tool || (echo "Do not have all required tools."
-                    echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk"
-                    echo "for more details"; exit 1)
+    check "$tool" || \
+        (echo "Do not have all required tools."
+         echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk"
+         echo "for more details"
+         exit 1)
 done
 echo "Have required tools."
 
@@ -69,15 +71,11 @@ versioned_tools=("gcc 4.9" "python2 2.7" "python3 3.2")
 for tool_n_version in "${versioned_tools[@]}"; do
     tool="${tool_n_version% *}"
     version="${tool_n_version#* }"
-    checkver "$tool" "$version" || (echo "Some tools are not up-to-date.";
-                                    exit 1)
+    checkver "$tool" "$version" || \
+        (echo "Some tools are not up-to-date."
+         exit 1)
 done
 echo "Tools are up-to-date."
-
-# Install required packages
-sudo apt-get install libpcap-dev gcc-multilib xz-utils || {
-    echo "Need to have libpcap headers and gcc-multilib"
-}
 
 
 ################################################################################
@@ -118,6 +116,7 @@ grep -q 'GRUB_CMDLINE_LINUX=.*huge' /etc/default/grub ||
          "s/GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"$huge_page_cmdline/" \
          /etc/default/grub || (echo "Cannot set up huge pages in /proc/cpuinfo";
                                exit 1)
+sudo mkdir -p "$huge_page_dir"
 sudo mount -t hugetlbfs nodev "$huge_page_dir"
 grep -q "huge" /etc/fstab ||
     echo "nodev ${huge_page_dir} hugetlbfs ${huge_page_fstab} 0 0" | \
@@ -129,11 +128,14 @@ echo "Huge pages setup"
 #                                Download File                                 #
 ################################################################################
 # Download DPDK tar file
-dpdk_version=17.02.1
+dpdk_version="17.02.1"
+url="http://fast.dpdk.org/rel/dpdk-${dpdk_version}.tar.xz"
+file="dpdk-${dpdk_version}.tar.xz"
+dir="dpdk-stable-${dpdk_version}"
 cd
-wget http://fast.dpdk.org/rel/dpdk-$dpdk_version.tar.xz
-tar xJf dpdk-$dpdk_version.tar.xz
-cd dpdk-stable-$dpdk_version
+wget "${url}"
+tar xJf "${file}"
+cd "${dir}"
 
 
 ################################################################################
@@ -143,7 +145,7 @@ cd dpdk-stable-$dpdk_version
 echo "#!/bin/bash
 # These are used for several Makefiles
 # http://dpdk.org/doc/guides/linux_gsg/build_sample_apps.html#compiling-a-sample-application
-export RTE_SDK=$HOME/dpdk-stable-$dpdk_version
+export RTE_SDK=${HOME}/dpdk-stable-${dpdk_version}
 export RTE_TARGET=x86_64-native-linuxapp-gcc
 " > set-environment-variables && chmod +x set-environment-variables
 source set-environment-variables
@@ -151,7 +153,7 @@ source set-environment-variables
 # This order was created from the suggestion here:
 # http://dpdk.org/ml/archives/dev/2016-March/036207.html
 # This creates a configuration script
-make config T="$RTE_TARGET"
+make config T="${RTE_TARGET}"
 if yn_defaultn "Do you want to change the config file?"; then
     echo "Edit ${HOME}/dpdk-${dpdk_version}/build/.config"
     echo "Return to line $((LINENO + 2)) in $(basename "$0") to finish installing."
@@ -159,7 +161,7 @@ fi
 # This compiles something...I'm not sure what
 make
 # This compiles and installs the dpdk libraries in $dpdk_directory/dpdk-install
-make install T="$RTE_TARGET" DESTDIR="dpdk-install"
+make install T="${RTE_TARGET}" DESTDIR="dpdk-install"
 
 # These commands need to be run before any DPDK application is run
 echo "#!/bin/bash
