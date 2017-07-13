@@ -57,23 +57,35 @@ yn_defaultn () {
 ################################################################################
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
 required_tools=(make cmp sed grep arch gcc python2 python3)
+missing_tools=()
+echo "Checking required tools..."
 for tool in "${required_tools[@]}"; do
-    check "$tool" || \
-        (echo "Do not have all required tools."
-         echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk"
-         echo "for more details"
-         exit 1)
+    # check "$tool" || {
+    #     echo "Do not have all required tools."
+    #     echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk for more details"
+    #     exit 1
+    # }
+    check "$tool" || missing_tools+="${tool}"
 done
-echo "Have required tools."
+if [[ "${#missing_tools[@]}" -eq 0 ]]; then
+    echo "Have required tools."
+else
+    sudo apt-get install "${missing_tools[@]}" || {
+        echo "Unable to install missing tools: ${missing_tools[*]}"
+        exit 1
+    }
+fi
 
 # Check tool versions
 versioned_tools=("gcc 4.9" "python2 2.7" "python3 3.2")
+echo "Checking tools versions..."
 for tool_n_version in "${versioned_tools[@]}"; do
     tool="${tool_n_version% *}"
     version="${tool_n_version#* }"
-    checkver "$tool" "$version" || \
-        (echo "Some tools are not up-to-date."
-         exit 1)
+    checkver "$tool" "$version" || {
+        echo "Some tools are not up-to-date."
+        exit 1
+    }
 done
 echo "Tools are up-to-date."
 
@@ -114,14 +126,15 @@ fi
 grep -q 'GRUB_CMDLINE_LINUX=.*huge' /etc/default/grub ||
     sudo sed -i.bak \
          "s/GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"$huge_page_cmdline/" \
-         /etc/default/grub || (echo "Cannot set up huge pages in /proc/cpuinfo";
-                               exit 1)
+         /etc/default/grub ||
+    (echo "Cannot set up huge pages in /proc/cpuinfo";
+     exit 1)
 sudo mkdir -p "$huge_page_dir"
 sudo mount -t hugetlbfs nodev "$huge_page_dir"
 grep -q "huge" /etc/fstab ||
     echo "nodev ${huge_page_dir} hugetlbfs ${huge_page_fstab} 0 0" | \
         sudo tee -a /etc/fstab &>/dev/null
-echo "Huge pages setup"
+echo "Completed huge pages setup"
 
 
 ################################################################################
@@ -133,8 +146,17 @@ url="http://fast.dpdk.org/rel/dpdk-${dpdk_version}.tar.xz"
 file="dpdk-${dpdk_version}.tar.xz"
 dir="dpdk-stable-${dpdk_version}"
 cd
-wget "${url}"
-tar xJf "${file}"
+if [[ ! -f "${file}" && ! -d "${dir}" ]]; then
+    echo "wget ${url}"
+    wget "${url}"
+fi
+if [[ -f "${file}" && ! -d "${dir}" ]]; then
+    tar xJf "${file}"
+fi
+if [[ ! -d "${dir}" ]]; then
+    echo "Could not download/extract file"
+    exit 1
+fi
 cd "${dir}"
 
 
