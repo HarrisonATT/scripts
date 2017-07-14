@@ -46,3 +46,16 @@ cd
 git clone "${url}"
 cd "${repo}"
 make
+
+echo "pktgen-dpdk successfully installed--hopefully :)
+
+You now have an executable in the app directory. There is a convenience script
+located in the tools directory (run.py). However, you will need to alter or copy
+the default configuration file (cfg/default.cfg) to use it.
+
+WARNING:
+The default.cfg file uses a default black-yellow.theme file. Be aware that if
+you are using a terminal with a black background (the default in PuTTY and other
+terminal emulators), then you will be unable to see any of the packet
+statistics. So you may want to forego the theme and use the default theme.
+"
