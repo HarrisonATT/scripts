@@ -32,7 +32,7 @@ verlt() {
     verlte "$1" "$2" && [ "$1" != "$2" ]
 }
 
-# get a yes or no response
+# Get a yes or no response
 # http://stackoverflow.com/questions/3231804/in-bash-how-to-add-are-you-sure-y-n-to-any-command-or-alias
 yn_defaulty () {
     read -r -p "$1 [Y/n] " response
@@ -60,11 +60,6 @@ required_tools=(make cmp sed grep arch gcc python2 python3)
 missing_tools=()
 echo "Checking required tools..."
 for tool in "${required_tools[@]}"; do
-    # check "$tool" || {
-    #     echo "Do not have all required tools."
-    #     echo "See http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk for more details"
-    #     exit 1
-    # }
     check "$tool" || missing_tools+="${tool}"
 done
 if [[ "${#missing_tools[@]}" -eq 0 ]]; then
