@@ -60,7 +60,7 @@ required_tools=(make cmp sed grep arch gcc python2 python3)
 missing_tools=()
 echo "Checking required tools..."
 for tool in "${required_tools[@]}"; do
-    check "$tool" || missing_tools+="${tool}"
+    check "$tool" || missing_tools+=("${tool}")
 done
 if [[ "${#missing_tools[@]}" -eq 0 ]]; then
     echo "Have required tools."
