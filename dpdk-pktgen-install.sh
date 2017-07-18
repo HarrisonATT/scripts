@@ -31,7 +31,7 @@ fi
 #                   Check for required environment variables                   #
 ################################################################################
 if [[ -z "${RTE_SDK}" ]] || [[ -z "${RTE_TARGET}" ]]; then
-    echo 'Both $RTE_SDK and $RTE_TARGET need to be set'
+    echo "Both \$RTE_SDK and \$RTE_TARGET need to be set"
     exit 1
 fi
 

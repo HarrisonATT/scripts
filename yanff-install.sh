@@ -68,7 +68,7 @@ go get -v golang.org/x/tools/cmd/stringer
 # Set your PATH to point to bin directory under your GOPATH, e.g. export
 # PATH="$PATH:$GOPATH"/bin
 echo "$PATH" | tr ':' '\n' | grep "${GOPATH}/bin" || \
-    echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc
+    echo "export PATH=\$PATH:$(go env GOPATH)/bin" >> ~/.bashrc
 # You should be able to build test framework now with "make main" in test
 # sub-directory.
 go get -v -d github.com/intel-go/yanff \

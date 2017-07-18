@@ -19,11 +19,11 @@ elif [ "$1" == "--64" ]; then
 elif [ "$1" == "--remove" ]; then
     rm -rf "$HOME/.go/"
     rm -rf "$HOME/go/"
-    sed -i '/# GoLang/d' "$HOME/.bashrc"
-    sed -i '/export GOROOT/d' "$HOME/.bashrc"
-    sed -i '/:$GOROOT/d' "$HOME/.bashrc"
-    sed -i '/export GOPATH/d' "$HOME/.bashrc"
-    sed -i '/:$GOPATH/d' "$HOME/.bashrc"
+    sed -i "/# GoLang/d" "$HOME/.bashrc"
+    sed -i "/export GOROOT/d" "$HOME/.bashrc"
+    sed -i "/:\$GOROOT/d" "$HOME/.bashrc"
+    sed -i "/export GOPATH/d" "$HOME/.bashrc"
+    sed -i "/:\$GOPATH/d" "$HOME/.bashrc"
     echo "Go removed."
     exit 0
 elif [ "$1" == "--help" ]; then
@@ -39,7 +39,7 @@ if [ -d "$HOME/.go" ] || [ -d "$HOME/go" ]; then
     exit 1
 fi
 echo "Downloading $DFILE ..."
-wget https://storage.googleapis.com/golang/$DFILE -O /tmp/go.tar.gz
+wget "https://storage.googleapis.com/golang/${DFILE}" -O /tmp/go.tar.gz
 if [ $? -ne 0 ]; then
     echo "Download failed! Exiting."
     exit 1
@@ -49,11 +49,11 @@ tar -C "$HOME" -xzf /tmp/go.tar.gz
 mv "$HOME/go" "$HOME/.go"
 touch "$HOME/.bashrc"
 {
-    echo '# GoLang'
-    echo 'export GOROOT=$HOME/.go'
-    echo 'export PATH=$PATH:$GOROOT/bin'
-    echo 'export GOPATH=$HOME/go'
-    echo 'export PATH=$PATH:$GOPATH/bin'
+    echo "# GoLang"
+    echo "export GOROOT=\$HOME/.go"
+    echo "export PATH=\$PATH:\$GOROOT/bin"
+    echo "export GOPATH=\$HOME/go"
+    echo "export PATH=\$PATH:\$GOPATH/bin"
 } >> "$HOME/.bashrc"
 
 mkdir -p "$HOME"/go/{src,pkg,bin}
