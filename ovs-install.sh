@@ -104,8 +104,8 @@ set -e
 cd ovs
 
 # https://github.com/openvswitch/ovs/blob/master/Documentation/intro/install/dpdk.rst
-# ./configure "--with-dpdk=$DPDK_BUILD"
-# make
+./configure "--with-dpdk=$DPDK_BUILD"
+make
 echo 'vm.nr_hugepages=2048' | sudo tee /etc/sysctl.d/hugepages.conf
 N=4
 sudo sysctl -w vm.nr_hugepages="$N"  # where N = No. of 2M huge pages
