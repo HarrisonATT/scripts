@@ -56,7 +56,7 @@ yn_defaultn () {
 #                           Check for required tools                           #
 ################################################################################
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
-required_tools=(make cmp sed grep arch gcc python2 python3)
+required_tools=(make cmp sed grep arch gcc python2 python3 xz-utils)
 missing_tools=()
 echo "Checking required tools..."
 for tool in "${required_tools[@]}"; do

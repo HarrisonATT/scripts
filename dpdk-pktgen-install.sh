@@ -43,7 +43,11 @@ set -e
 repo="pktgen-dpdk"
 url="http://dpdk.org/git/apps/${repo}"
 cd
-git clone "${url}"
+if [[ -d "${repo}" ]]; then
+    (cd "${repo}"; git pull)
+else
+    git clone "${url}"
+fi
 cd "${repo}"
 make
 
