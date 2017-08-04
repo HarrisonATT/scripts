@@ -129,6 +129,7 @@ sudo mount -t hugetlbfs nodev "$huge_page_dir"
 grep -q "huge" /etc/fstab ||
     echo "nodev ${huge_page_dir} hugetlbfs ${huge_page_fstab} 0 0" | \
         sudo tee -a /etc/fstab &>/dev/null
+sudo update-grub
 echo "Completed huge pages setup"
 
 
