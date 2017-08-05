@@ -48,6 +48,7 @@ if [[ -d "${repo}" ]]; then
 else
     git clone "${url}"
 fi
+(cd "$RTE_SDK" && make install T="$RTE_TARGET" -j)
 cd "${repo}"
 make
 
