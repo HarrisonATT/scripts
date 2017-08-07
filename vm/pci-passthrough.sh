@@ -38,7 +38,7 @@ fi
 
 cat <<EOF
 Copy the following XML, then run the following commands and paste the XML into
-the VM configuration inside the <device> tags.
+the VM configuration inside the <devices> tag.
 
 === XML ===
 <hostdev mode='subsystem' type='pci' managed='yes'>
