@@ -91,8 +91,8 @@ done
 if [[ "${#missing_modules[@]}" -eq 0 ]]; then
     cat <<-EOF
 			Actually I'm not 100% sure what modules are required, but you definitely
-			need at least `sse3` extensions (which you have), but I'm guessing `avx`
-			would work too.
+			need at least sse3 extensions (which you have), but I'm guessing avx would
+			work too.
 			EOF
 else
     echo "Missing these modules: ${missing_modules[*]}"
