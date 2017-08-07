@@ -101,18 +101,27 @@ fi
 
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
 
-# Check required tools
-echo "Checking required tools..."
-required_tools=(make cmp sed grep arch gcc python2 python3)
-missing_tools=()
-for tool in "${required_tools[@]}"; do
-    checktool "$tool" || missing_tools+=("${tool}")
+# Check required package and tools
+missing_packages=()
+
+echo "Checking required packages..."
+required_packages=(xz-utils python-minimal)
+installed_packages=$(apt list --installed | sed 's_/.*__')
+for package in "${required_packages[@]}"; do
+    grep -q "$package" <(echo "$installed_packages") ||
+        missing_packages+=("${package}")
 done
-if [[ "${#missing_tools[@]}" -eq 0 ]]; then
-    echo "Have required tools."
+
+echo "Checking required tools..."
+required_tools=(make cmp sed grep arch gcc python3)
+for tool in "${required_tools[@]}"; do
+    checktool "$tool" || missing_packages+=("${tool}")
+done
+if [[ "${#missing_packages[@]}" -eq 0 ]]; then
+    echo "Have required packages and tools."
 else
-    sudo apt-get install "${missing_tools[@]}" || {
-        echo "Unable to install missing tools: ${missing_tools[*]}"
+    sudo apt-get install "${missing_packages[@]}" || {
+        echo "Unable to install missing packages/tools: ${missing_packages[*]}"
         exit 1
     }
 fi
@@ -129,24 +138,6 @@ for tool_n_version in "${versioned_tools[@]}"; do
     }
 done
 echo "Tools are up-to-date."
-
-# Check required packages
-echo "Checking required packages..."
-required_packages=(xz-utils)
-missing_packages=()
-installed_packages=$(apt list --installed | sed 's_/.*__')
-for package in "${required_packages[@]}"; do
-    grep "$package" <(echo "$installed_packages") ||
-        missing_packages+=("${package}")
-done
-if [[ "${#missing_packages[@]}" -eq 0 ]]; then
-    echo "Have required packages."
-else
-    sudo apt-get install "${missing_packages[@]}" || {
-        echo "Unable to install missing packages: ${missing_packages[*]}"
-        exit 1
-    }
-fi
 
 ################################################################################
 #                                  Huge Pages                                  #
@@ -210,6 +201,7 @@ cd "${dir}"
 ################################################################################
 #                                Compile Source                                #
 ################################################################################
+set -e
 # These environment variables are used by several Makefiles
 echo "#!/bin/bash
 # These are used for several Makefiles
@@ -229,8 +221,12 @@ if yn_defaultn "Do you want to change the config file?"; then
 fi
 # This compiles something...I'm not sure what
 make
-# This compiles and installs the dpdk libraries in $dpdk_directory/dpdk-install
-make install T="${RTE_TARGET}" DESTDIR="dpdk-install"
+# This compiles and installs the dpdk libraries in /usr/local (or somewhere so
+# that all users can use them)
+# You need sudo because /usr/local is owned by root
+# If you want to install locally, use this command:
+# make install T=$RTE_TARGET DESTDIR=<destdir>
+sudo make install
 
 # These commands need to be run before any DPDK application is run
 echo "#!/bin/bash

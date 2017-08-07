@@ -48,7 +48,9 @@ if [[ -d "${repo}" ]]; then
 else
     git clone "${url}"
 fi
-(cd "$RTE_SDK" && make install T="$RTE_TARGET" -j)
+# If you want to install locally, use this command:
+# make install T=$RTE_TARGET DESTDIR=<destdir>
+(cd "$RTE_SDK" && sudo make install -j)
 cd "${repo}"
 make
 
