@@ -4,7 +4,7 @@
 #                               Helper Functions                               #
 ################################################################################
 # Return zero if tool exists, else non-zero.
-check () {
+checktool () {
     # Non-zero error code if command does not exist.
     "$1" --version &>/dev/null || (echo "	Missing required tool: $1"; return 1)
 }
@@ -15,13 +15,20 @@ stripver () {
 }
 
 # Return version number of tool
-getver () {
+gettoolver () {
     stripver "$($1 --version 2>&1 | head -n1)"
 }
 
-# Return zero if tool has a version number greater than argument, else non-zero.
+# Return zero if a version number is greater than argument, else non-zero.
 checkver () {
-    verlt "$2" "$(getver "$1")" || (echo "	$1 is not at least version $2"; return 1)
+    # verlt "$(stripver ${2})" "$1"
+    verlt "$2" "$(stripver "${1}")"
+}
+
+# Return zero if tool has a version number greater than argument, else non-zero.
+checktoolver () {
+    verlt "$2" "$(gettoolver "$1")" ||
+        (echo "	$1 is not at least version $2"; return 1)
 }
 
 # http://stackoverflow.com/a/4024263
@@ -53,14 +60,53 @@ yn_defaultn () {
 
 
 ################################################################################
+#                                    Kernel                                    #
+################################################################################
+echo "Checking kernel version"
+kernel_version=2.6.34
+if ! checkver "$(uname -r)" "$kernel_version"; then
+    echo "Kernel version not at least ${kernel_version}."
+    exit 1
+fi
+
+echo "Checking glibc version"
+glibc_version="2.7"
+if ! checkver "$(ldd --version | head -n1)" "$glibc_version"; then
+    echo "Glibc version not at least ${glibc_version}."
+    exit 1
+fi
+
+
+################################################################################
 #                           Check for required tools                           #
 ################################################################################
+echo "Checking required kernel modules..."
+required_modules=(sse3)
+missing_modules=()
+installed_modules=$(grep -m 1 flags /proc/cpuinfo | sed 's/.*://')
+for module in "${required_modules[@]}"; do
+    grep -q "$module" <(echo "$installed_modules") ||
+        missing_modules+=("${module}")
+done
+if [[ "${#missing_modules[@]}" -eq 0 ]]; then
+    cat <<-EOF
+			Actually I'm not 100% sure what modules are required, but you definitely
+			need at least `sse3` extensions (which you have), but I'm guessing `avx`
+			would work too.
+			EOF
+else
+    echo "Missing these modules: ${missing_modules[*]}"
+    exit 1
+fi
+
 # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html#compilation-of-the-dpdk
-required_tools=(make cmp sed grep arch gcc python2 python3 xz-utils)
-missing_tools=()
+
+# Check required tools
 echo "Checking required tools..."
+required_tools=(make cmp sed grep arch gcc python2 python3)
+missing_tools=()
 for tool in "${required_tools[@]}"; do
-    check "$tool" || missing_tools+=("${tool}")
+    checktool "$tool" || missing_tools+=("${tool}")
 done
 if [[ "${#missing_tools[@]}" -eq 0 ]]; then
     echo "Have required tools."
@@ -72,30 +118,35 @@ else
 fi
 
 # Check tool versions
-versioned_tools=("gcc 4.9" "python2 2.7" "python3 3.2")
 echo "Checking tools versions..."
+versioned_tools=("gcc 4.9" "python2 2.7" "python3 3.2")
 for tool_n_version in "${versioned_tools[@]}"; do
     tool="${tool_n_version% *}"
     version="${tool_n_version#* }"
-    checkver "$tool" "$version" || {
+    checktoolver "$tool" "$version" || {
         echo "Some tools are not up-to-date."
         exit 1
     }
 done
 echo "Tools are up-to-date."
 
-
-################################################################################
-#                                    Kernel                                    #
-################################################################################
-# Check kernel version
-kernel_version=2.7
-if verlt "$(stripver "$(uname -r)")" "$kernel_version"; then
-    echo "Kernel version not at least 2.7."; exit 1
+# Check required packages
+echo "Checking required packages..."
+required_packages=(xz-utils)
+missing_packages=()
+installed_packages=$(apt list --installed | sed 's_/.*__')
+for package in "${required_packages[@]}"; do
+    grep "$package" <(echo "$installed_packages") ||
+        missing_packages+=("${package}")
+done
+if [[ "${#missing_packages[@]}" -eq 0 ]]; then
+    echo "Have required packages."
 else
-    echo "Kernel is up-to-date."
+    sudo apt-get install "${missing_packages[@]}" || {
+        echo "Unable to install missing packages: ${missing_packages[*]}"
+        exit 1
+    }
 fi
-
 
 ################################################################################
 #                                  Huge Pages                                  #
