@@ -11,9 +11,13 @@ export DB_SOCK="${ovs_dir}/db.sock"
 # start ovdb-server
 sudo "$ovs_ctl_script" --no-ovs-vswitchd start
 # configure ovs-vswitchd
-sudo ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+sudo ovs-vsctl --no-wait set Open_vSwitch . \
+     other_config:dpdk-init="true"
+sudo ovs-vsctl --no-wait set Open_vSwitch . \
+     other_config:dpdk-socket-mem="2048,2048"
 # start ovs-vswitchd
-sudo "$ovs_ctl_script" --no-ovsdb-server --db-sock="$DB_SOCK" start
+# sudo "$ovs_ctl_script" --no-ovsdb-server --db-sock="$DB_SOCK" start
+sudo "$ovs_ctl_script" --no-ovsdb-server start
 
 
 # There are many other configuration options, the most important of which are
