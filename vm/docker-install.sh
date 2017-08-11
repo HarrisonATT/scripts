@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is intended to install all of the necessary packages and then
+# download and install docker.
+
 sudo apt-get update
 sudo apt-get install \
     "linux-image-extra-$(uname -r)" \

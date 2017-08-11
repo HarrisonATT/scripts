@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This is intended to run the VPP Progressive tutorial as found at the following
+# page:
+# https://wiki.fd.io/view/VPP/Progressive_VPP_Tutorial
+
 ##############################################
 ## Preparation: Ensure superuser privileges ##
 ##############################################

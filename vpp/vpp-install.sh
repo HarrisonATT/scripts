@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This is intended to install VPP from the Debian packages. It will not work if
+# fd.io is not in the whitelist (which for Chris Chase, it's probably not).
+
 # Allow user to choose installation options
 echo "Ubuntu version:"
 select ver in "14.04 Trusty" "16.04 Xenial"; do

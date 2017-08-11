@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# This script is intended to instlall YANFF and all of its dependencies. Since
+# the writing of this script, the writers of YANFF have written their own
+# installation script. I still like mine, mostly because I wrote it. It has the
+# added benefit of pulling the git repository and building YANFF in addition to
+# downloading the dependancies.
+
 #################
 # Install YANFF #
 #################

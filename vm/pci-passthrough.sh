@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This is intended to provide you with the information necessary to use PCI
+# pass-through with a VM. You will need to manually edit the VM's XML
+# configuration yourself, however.
+
 usage() {
     echo "usage: $0 <vm-domain-name> <pci-device-address>"
 }

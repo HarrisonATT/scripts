@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This is intended to clone the VPP git code base. It's pretty unnecessary, I'm
+# not sure why I made it.
+
 set -e
 if [ "x$1" = "x" ]; then
     dest="vpp"

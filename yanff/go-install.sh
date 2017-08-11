@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# This script is intended to install Golang.
+
+# Although I have made a few edits, it is primarily the work of Jorge Canha, and
+# can be found at:
+# https://github.com/canha/golang-tools-install-script
+
 set -e
 
 VERSION="1.8.3"

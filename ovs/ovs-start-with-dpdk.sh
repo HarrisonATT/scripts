@@ -1,10 +1,14 @@
 #!/bin/bash
+
+# This script is intended to start OVS with DPDK support. It is mostly based on
+# the following page:
+# http://docs.openvswitch.org/en/latest/intro/install/dpdk/#setup-ovs
+
 set -e
 set -x
 # ovs-ctl may not be in the path for sudo
 ovs_ctl_script="$(which ovs-ctl)"
 
-# http://docs.openvswitch.org/en/latest/intro/install/dpdk/#setup-ovs
 ovs_dir="/usr/local/etc/openvswitch"
 export DB_SOCK="${ovs_dir}/db.sock"
 
@@ -15,7 +19,8 @@ sudo ovs-vsctl --no-wait set Open_vSwitch . \
      other_config:dpdk-init="true"
 sudo ovs-vsctl --no-wait set Open_vSwitch . \
      other_config:dpdk-socket-mem="2048,2048"
-# start ovs-vswitchd
+# We're just going to use the default database socket. Feel free to use this if
+# you want to.
 # sudo "$ovs_ctl_script" --no-ovsdb-server --db-sock="$DB_SOCK" start
 sudo "$ovs_ctl_script" --no-ovsdb-server start
 

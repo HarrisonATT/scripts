@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# This script was given to me by Chang Xu. I've never used it, but it may
+# provide some useful insight.
+
 # rmmod ixgbevf
 #/etc/init.d/openvswitch-ipsec stop
 /etc/init.d/openvswitch-switch stop

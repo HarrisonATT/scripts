@@ -1,5 +1,12 @@
 #!/bin/bash
-# https://blogs.igalia.com/dpino/2016/04/10/network-namespaces/
+
+# This is intended to create a bash shell that is "inside" a network
+# namespace. It will set the PS1 to remind you that you are in the network
+# namespace.
+
+# This script is mostly based on the following page:
+# https://blogs.igalia.com/dpino/2016/04/10/network-namespace/s
+
 _ns_name="$1"
 if [[ -z "$1" ]]; then
     _ns_name="netns0"

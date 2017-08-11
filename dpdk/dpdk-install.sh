@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# This script is intended to install DPDK from scratch. It will check several
+# things, including required characteristics of the machine and install required
+# packages. It will install the source for DPDK and compile it.
+
+# After using this, there will be two scripts in the DPDK installation
+# directory: `load-modules` and `set-environment-variables`. I suggest putting
+# `set-environment-variables` in your .bashrc file and running `load-modules`
+# once each time you boot.
+
+# This is mostly based on the following pages:
+#  - http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
+#  - http://dpdk.org/doc/guides/linux_gsg/build_dpdk.html
+
+# Some things that you may wish to change are listed below:
+# dpdk_version (currently 17.02.1)
+
 ################################################################################
 #                               Helper Functions                               #
 ################################################################################
@@ -219,22 +235,22 @@ if yn_defaultn "Do you want to change the config file?"; then
     echo "Edit ${HOME}/dpdk-${dpdk_version}/build/.config"
     echo "Return to line $((LINENO + 2)) in $(basename "$0") to finish installing."
 fi
-# This compiles something...I'm not sure what
+# This compiles DPDK
 make
-# This compiles and installs the dpdk libraries in /usr/local (or somewhere so
-# that all users can use them)
-# You need sudo because /usr/local is owned by root
+# This installs the dpdk libraries in /usr/local.
+# You need sudo because /usr/local is owned by root.
 # If you want to install locally, use this command:
 # make install T=$RTE_TARGET DESTDIR=<destdir>
 sudo make install
 
 # These commands need to be run before any DPDK application is run
-echo "#!/bin/bash
+cat <<EOF > load-modules && chmod +x load-modules
+#!/bin/bash
 # You need to do this before you can run any DPDK application
 # http://dpdk.org/doc/guides/linux_gsg/build_dpdk.html#loading-modules-to-enable-userspace-io-for-dpdk
 sudo modprobe uio_pci_generic
 # sudo modprobe uio
 # sudo insmod kmod/igb_uio.ko
 sudo modprobe vfio-pci
-" > load-modules && chmod +x load-modules
+EOF
 

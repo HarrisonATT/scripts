@@ -1,7 +1,15 @@
 #!/bin/bash
 
+# This is intended to create a newtork namespace, attach a device to it, and
+# then assign an IP address (with prefix/mask) to that device inside the created
+# namespace.
+
+# It is also a demonstration of how to use network namespaces so you can know
+# what you can do with them.
+
 usage () {
-    echo "usage: $0 <ns> <dev> <addr>"
+    echo "usage: $0 <ns> <dev> <addr-with-prefix>
+example: $0 ns0 eth0 192.168.100.2/24"
 }
 
 if [[ $# -lt 3 ]]; then

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This is intended to install pktgen-dpdk and compile it. DPDK should already
+# be installed before this script is run.
+
 ################################################################################
 #                               Helper Functions                               #
 ################################################################################

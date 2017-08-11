@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This is intended to install all packages necessary to use the KVM hypervisor.
+
 # https://www.linux-kvm.org/page/RunningKVM
 
 packages=(gcc
