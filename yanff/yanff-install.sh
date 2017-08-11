@@ -42,7 +42,8 @@ awk -v ver="${ver}" -v reqver="${reqver}" 'BEGIN { if (ver < reqver) exit 1 }' |
 # libpcap-dev  : libpcap headers for DPDK
 # gcc-multilib : for DPDK
 # xz-utils     : to decompress DPDK download
-sudo apt-get install git libpcap-dev gcc-multilib xz-utils || {
+# curl         : for curl http://.... in dpdk directory Makefile
+sudo apt-get install git libpcap-dev gcc-multilib xz-utils curl || {
     echo "Need to have git, libpcap headers, gcc-multilib, and xz-utils"
 }
 
@@ -83,5 +84,5 @@ go get -v -d github.com/intel-go/yanff \
 # This is supposed to run by default, but just in case
 # It won't run again after the first time, even if it fails
 (cd "${GOPATH}/src/github.com/intel-go/yanff/test" && go generate)
-
+(cd "${GOPATH}/src/github.com/intel-go/yanff/dpdk" && make)
 (cd "${GOPATH}/src/github.com/intel-go/yanff/test" && make all)
